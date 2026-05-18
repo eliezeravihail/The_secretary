@@ -1,10 +1,7 @@
-# The Secretary's work-state must never be committed.
-# If the user picks a path inside this repo, these patterns block it.
+# Optional: keeps a local work-state directory from showing up as
+# untracked noise. Not a hard block — if you want to commit it, remove
+# the matching line or use `git add -f`.
 work_state/
 work-state/
 state/
 daily/
-log.md
-todo.md
-measures.md
-results.md

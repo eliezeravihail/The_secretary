@@ -279,7 +279,6 @@ Discover the exact tool names via `ToolSearch` if they are not pre-loaded in the
 - Do not create calendar events without the user's confirmation of time and title.
 - Do not delete history.
 - Do not decide on the user's behalf.
-- **Never commit the work-state directory to git.** The journal is local-only by design. If the chosen `work_state_dir` happens to sit inside a git repository, add it to `.gitignore` before writing the first file.
 
 ## Opening questions (after initialization, first run only)
 
