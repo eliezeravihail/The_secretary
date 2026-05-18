@@ -143,8 +143,6 @@ Check whether the task description contains a coordination marker referencing th
 
 (Substitute `<team-lead-name>` with the `team_lead` value from config.)
 
-**Exception:** Tasks that concern modifying or developing the secretary skill itself (changes to `secretary.md`, behavior adjustments, prompt improvements) bypass the coordination check entirely — they are not work tasks and do not require team-lead coordination.
-
 If **no marker is present** — alert **before writing**:
 
 ```
@@ -157,7 +155,7 @@ Was it coordinated with <team-lead-name>?
 3. Not yet — mark as "awaiting coordination"?
 ```
 
-> **If the user responds "המשך" / "continue"** — add the item without a planning-only restriction and without further alert.
+> **If the user explicitly responds "המשך" / "continue"** — add the item but append the marker `⚠️ נדרסה ידנית — דרישת תיאום עם <team-lead-name>` to the task line.
 
 > **Rule:** An uncoordinated task may be added to `todo.md` as planning only.
 > **Execution is forbidden** (opening a branch, writing code, running an experiment) before coordination with the team lead.
