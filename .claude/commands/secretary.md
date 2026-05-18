@@ -153,9 +153,9 @@ Was it coordinated with <team-lead-name>?
 1. Yes — when/where? (I'll add a `from <team-lead-name>` marker)
 2. No — to be kept as planning only (no execution allowed without coordination)
 3. Not yet — mark as "awaiting coordination"?
-
-Waiting for an answer — not writing until then.
 ```
+
+> **If the user explicitly responds "continue"** — add the item but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed` to the task line.
 
 > **Rule:** An uncoordinated task may be added to `todo.md` as planning only.
 > **Execution is forbidden** (opening a branch, writing code, running an experiment) before coordination with the team lead.
