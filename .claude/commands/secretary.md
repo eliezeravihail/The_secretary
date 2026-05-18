@@ -155,7 +155,7 @@ Was it coordinated with <team-lead-name>?
 3. Not yet — mark as "awaiting coordination"?
 ```
 
-> **If the user explicitly responds "המשך" / "continue"** — add the item but append the marker `⚠️ נדרסה ידנית — דרישת תיאום עם <team-lead-name>` to the task line.
+> **If the user explicitly responds "continue"** — add the item but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed` to the task line.
 
 > **Rule:** An uncoordinated task may be added to `todo.md` as planning only.
 > **Execution is forbidden** (opening a branch, writing code, running an experiment) before coordination with the team lead.
