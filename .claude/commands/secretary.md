@@ -173,8 +173,22 @@ If a marker **is present** → proceed to write without alerting.
 - Append to `log.md` only, no read
 
 ### Logging a run result
-- Append a row to `measures.md`
-- Append to `log.md`: `[YYYY-MM-DD] run: <network> run_N mAP=X`
+1. **Read `measures.md`** to extract the list of known networks/experiments (the `network` column).
+2. **Match the reported result** against the known list (case-insensitive, partial match allowed).
+   - **Match found** → proceed to step 3.
+   - **No match** → alert before writing:
+     ```
+     ⚠️ The reported metric does not match any known experiment in measures.md.
+     Known experiments: [list from measures.md, or "none yet"]
+
+     Which experiment does this result belong to?
+     1. [existing experiment] (if any)
+     2. New experiment — what should it be called?
+     3. Other (specify)
+     ```
+     Wait for the user's answer, then use the confirmed experiment name.
+3. Append the result row to `measures.md` using the confirmed experiment name.
+4. Append to `log.md`: `[YYYY-MM-DD] run: <network> run_N mAP=X`
 
 ### Logging a conclusion / insight
 - Append to `results.md`
