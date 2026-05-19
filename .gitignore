@@ -5,3 +5,4 @@ work_state/
 work-state/
 state/
 daily/
+.claude/settings.local.json
