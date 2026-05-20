@@ -63,6 +63,7 @@ After receiving the answers:
 | `log.md` | `./log.md` | **append only, no read** | one-line summary of every request/update |
 | `todo.md` | `./todo.md` | **read whole → edit → write** | directions + tasks + open questions |
 | `measures.md` | `./measures.md` | **read whole → append entry under matching experiment** | flexible repository of experimental results |
+| experiment attachments | `./measures/<experiment-name>/` | copy file in, reference from `measures.md` | images / charts / artifacts attached to a result |
 | `results.md` | `./results.md` | **append only, no read** | conclusions and insights |
 | daily log | `./daily/YYYY-MM/YYYY-MM-DD.md` | append only | full details |
 | Drive journal | `drive_journal_dir/YYYY-WNN.md` | via ingestor | (if configured) |
@@ -127,9 +128,12 @@ A free-form log of experimental results, **grouped by experiment**. Metric names
 - **Reported:** [metric names + values as reported — free-form]
 - **Context:** [config, conditions, what changed vs. previous]
 - **Meaning:** [interpretation — what it tells us / why it matters]
+- **Attachments:** [label](measures/<experiment-name>/YYYY-MM-DD_<run-label>_<desc>.<ext>) — only if image/chart artifacts were attached
 ```
 
 If the user reports numbers without articulating Meaning, ask one sharp question (e.g. "How should this be read vs. the previous run?"). Do not fabricate interpretation.
+
+Attachments (images, plots, charts, screenshots) are stored under `measures/<experiment-name>/` and referenced by relative Markdown link inside the entry. File naming convention: `YYYY-MM-DD_<run-label>_<short-desc>.<ext>`. Omit the `**Attachments:**` line if no artifacts were provided.
 
 ### results.md — conclusions and insights
 
@@ -224,7 +228,12 @@ If **No** or **Later** → do nothing further; the task remains without a calend
      ```
      Wait for the user's answer. If a new experiment was named, append a new `## [experiment-name] — [description]` section first.
 3. Append a new entry under the matched experiment section with the three fields: **Reported**, **Context**, **Meaning**. If Meaning was not articulated, ask one sharp question — do not invent it.
-4. Append to `log.md`: `[YYYY-MM-DD] result: <experiment> · <short summary>`.
+4. **If the input included an image / chart / artifact:**
+   a. Ask the user for a short descriptive label (e.g. `confusion-matrix`, `loss-curve`).
+   b. Ensure `measures/<experiment-name>/` exists; create it if not.
+   c. Copy the source file to `measures/<experiment-name>/YYYY-MM-DD_<run-label>_<desc>.<ext>` (use Bash `cp` for binary files — `Write` is text-only).
+   d. Append an `**Attachments:**` line to the entry referencing the file via relative Markdown link. Multiple attachments are comma-separated.
+5. Append to `log.md`: `[YYYY-MM-DD] result: <experiment> · <short summary>`.
 
 ### Logging a conclusion / insight
 - Append to `results.md`.
