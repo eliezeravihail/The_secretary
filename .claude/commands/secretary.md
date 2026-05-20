@@ -92,28 +92,33 @@ No headers, no structure. One line per event. **Do not read before writing.**
 **Priorities:** `[P1]` high · `[P2]` medium · `[P3]` low
 **Default:** `[P2]` — if the user does not specify a priority, add `[P2]` automatically.
 **States:** `[ ]` open · `[~]` in progress · `[x]` done
-**Ordering:** technical tasks sorted P1 first, then P2, then P3.
+**Ordering:** main tasks sorted P1 first, then P2, then P3.
 
 ```markdown
 # TODO
 # Priorities: [P1] high · [P2] medium (default) · [P3] low
 # States: [ ] open · [~] in progress · [x] done
 
-## Active directions
-### [name] · deadline: [date] · [source]
-- ✅ [done]
-- ⏳ [in progress / still on the table]
+## Main tasks
 
-## Technical tasks
-- [ ] [P1] [description] — [date added]
-- [~] [P2] [description] — [date added] [cal: <event-id>]
-- [x] [P2] [description] — completed YYYY-MM-DD
+### [Main task name] · [P1] · deadline: [date] · [source]
+- [ ] [P1] [subtask description] — [date added]
+- [~] [P2] [subtask description] — [date added] [cal: <event-id>]
+- [x] [P2] [subtask description] — completed YYYY-MM-DD
+
+### [Another main task] · [P2]
+- [ ] [P2] [subtask description] — [date added]
 
 ## Open questions
 - [question] — [date opened]
 ```
 
-The `[cal: <event-id>]` suffix appears only when a calendar block was created for the task (see "Scheduling a calendar block" below).
+Notes:
+- Every reported task is either a main task or a subtask of one — no orphan tasks.
+- A main task has a header line with priority, optional deadline, optional source. Subtasks appear as a checklist directly under it.
+- Subtask priority defaults to the main-task priority unless the user specifies otherwise.
+- Main tasks are **never closed automatically**. Sub-tasks accumulate over time; closure is an explicit user action.
+- The `[cal: <event-id>]` suffix appears only on subtasks that were scheduled (see "Scheduling a calendar block" below).
 
 ### measures.md — flexible results repository
 
@@ -151,27 +156,47 @@ Append only. **Never edit old entries. Do not read before writing.**
 ### todo update
 1. Read all of `todo.md`.
 2. Identify the type of change:
-   - **Adding a new item** (technical task, direction, open question)<!-- TEAM-LEAD-ONLY START --> → run the coordination check (below) before step 3<!-- TEAM-LEAD-ONLY END -->.
-   - **Status update / close / delete** → skip to step 3.
+   - **New task reported by the user** → run the **task placement** flow (below).
+   - **Status update / close / delete / edit** (including explicit closure of a main task) → skip to step 3.
+   - **New open question** → add to the Open questions section, skip to step 3.
 3. Write the full file.
 4. Append to `log.md`: `[YYYY-MM-DD] todo update: <description>`.
-5. **If a new task was added** → offer to schedule a calendar block (see "Scheduling a calendar block" below).
+5. **If a new subtask was added** → offer to schedule a calendar block (see "Scheduling a calendar block" below). For a newly added main task without subtasks — do not offer.
+
+#### Task placement (when adding a new task)
+
+Ask the user:
+
+```
+To which main task does this belong?
+1. [list existing main tasks, with their priorities]
+2. It is a new main task itself
+3. Open question (move to the Open questions section)
+```
+
+- **Option 1 (existing main task)** → add the task as a subtask under that main task. No coordination check (subtasks inherit). Continue to step 3 of `todo update`.
+- **Option 2 (new main task)** → ask for: name, priority (default `[P2]`), optional deadline, optional source.<!-- TEAM-LEAD-ONLY START --> Then run the **coordination check** (below) — it applies only to **new main tasks**.<!-- TEAM-LEAD-ONLY END --> Add the main task header with no subtasks yet. Continue to step 3.
+- **Option 3 (open question)** → add to the Open questions section. Continue to step 3.
+
+Main tasks are not closed automatically — even when all subtasks are `[x]`, leave the main task open. Closure is an explicit user action.
 
 <!-- TEAM-LEAD-ONLY START -->
-#### Coordination check (before adding a new item)
+#### Coordination check (before adding a new main task)
 
-Check whether the task description contains a coordination marker referencing the team lead. The marker can take any of these forms:
+Applies **only to a new main task** — subtasks inherit the coordination status of their parent.
+
+Check whether the main-task description contains a coordination marker referencing the team lead. The marker can take any of these forms:
 - `from <team-lead-name>` / `from-<team-lead-name>`
 - `from Slack with <team-lead-name>`
-- The team lead's name as an explicit source/owner in the direction title
+- The team lead's name as an explicit source/owner in the main-task header
 
 (Substitute `<team-lead-name>` with the `team_lead` value from config.)
 
 If **no marker is present** — alert **before writing**:
 
 ```
-⚠️ The task is not marked as coordinated with <team-lead-name>:
-"[task description]"
+⚠️ The main task is not marked as coordinated with <team-lead-name>:
+"[main-task description]"
 
 Was it coordinated with <team-lead-name>?
 1. Yes — when/where? (I'll add a `from <team-lead-name>` marker)
@@ -179,17 +204,17 @@ Was it coordinated with <team-lead-name>?
 3. Not yet — mark as "awaiting coordination"?
 ```
 
-> **If the user explicitly responds "continue"** — add the item but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed` to the task line.
+> **If the user explicitly responds "continue"** — add the main task but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed` to the header.
 
-> **Rule:** An uncoordinated task may be added to `todo.md` as planning only.
-> **Execution is forbidden** (opening a branch, writing code, running an experiment) before coordination with the team lead.
+> **Rule:** An uncoordinated main task may be added to `todo.md` as planning only.
+> **Execution is forbidden** (opening a branch, writing code, running an experiment, adding subtasks for execution) before coordination with the team lead.
 
 If a marker **is present** → proceed to write without alerting.
 <!-- TEAM-LEAD-ONLY END -->
 
-### Scheduling a calendar block (after adding a new task)
+### Scheduling a calendar block (after adding a new subtask)
 
-After step 3 of `todo update`, when the change was an **addition of a new technical task**, ask the user:
+After step 3 of `todo update`, when the change was an **addition of a new subtask** (an atomic unit of work), ask the user:
 
 ```
 Schedule a time block in the calendar for this task?
@@ -202,7 +227,7 @@ If **Yes**:
 1. Use the calendar connector's `suggest_time` with the requested duration — the connector resolves timezone from the real calendar.
 2. Present the proposed slot(s) to the user and confirm both the slot and the event title.
 3. On confirmation — use `create_event` to create the block.
-4. Edit the task line in `todo.md` to append `[cal: <event-id>]`.
+4. Edit the subtask line in `todo.md` to append `[cal: <event-id>]`.
 5. Append to `log.md`: `[YYYY-MM-DD] calendar: scheduled "<title>" at <slot>`.
 
 If **No** or **Later** → do nothing further; the task remains without a calendar binding.
@@ -305,7 +330,7 @@ Entries:
 ```
 
 ### "What's stuck / what's next"
-Open questions, tasks in `[~]` state with no progress for several days, experiments started without a result entry, deadlines that passed.
+Open questions, subtasks in `[~]` state with no progress for several days, main tasks with no subtask state change for an extended period, experiments started without a result entry, deadlines that passed.
 
 ## Drift detection
 After **any summary of external input** (Slack thread, PDF, screenshot, email) — compare the new activity against `todo.md`:
