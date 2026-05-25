@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-start.sh"
+            "command": "python3 .claude/hooks/session_start.py"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/prompt-memory.sh"
+            "command": "python3 .claude/hooks/prompt_memory.py"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/post-write-index.sh"
+            "command": "python3 .claude/hooks/post_write_index.py"
           }
         ]
       }
