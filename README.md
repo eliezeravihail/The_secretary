@@ -13,7 +13,7 @@ It is **not** an AI memory system. It is a disciplined documentation tool: struc
 - Logs **conclusions and insights** (`results.md`)
 - Answers queries: "what did I do this week?", "what's urgent?", "what's stuck?"
 - Detects **drift** when new input doesn't belong to any active task
-- Integrates with **calendar** (scheduling subtasks), **Slack** (reading threads), **Drive** (fetching docs), and **Gmail** (drafting follow-ups)
+- Integrates with **Slack** (reading and summarising conversations)
 - Optionally tracks **experiment results** (`measures.md`) — stripped at setup if not needed
 - Optionally enforces **team-lead coordination** before executing any new task — stripped at setup if not needed
 
@@ -60,14 +60,13 @@ claude  # or open in Claude Code desktop / web
 
 ## First run
 
-Type `/secretary` in Claude Code. On the first run it will ask four questions one at a time:
+Type `/secretary` in Claude Code. On the first run it will ask three questions one at a time:
 
 | # | Question | Notes |
 |---|----------|-------|
 | 1 | Which directory should hold the work state? | Full path; will be created if it doesn't exist |
 | 2 | Who is the team lead / coordinator? | Type `none` to disable the coordination workflow entirely |
 | 3 | Do you track experiments / metrics? | Type `no` to remove the experiment module entirely |
-| 4 | Path to the Drive journal directory? (optional) | Type `none` to skip |
 
 After answering, Secretary will:
 - Create the work-state directory and `daily/YYYY-MM/` for the current month
@@ -91,7 +90,7 @@ To remove it after the fact, delete every line between `<!-- TEAM-LEAD-ONLY STAR
 
 ### Experiment tracking
 
-When enabled, adds `measures.md` (grouped experiment results with Reported / Context / Meaning fields), the "Logging a run result" workflow, attachment storage under `measures/<experiment-name>/`, and Drive metrics integration.
+When enabled, adds `measures.md` (grouped experiment results with Reported / Context / Meaning fields), the "Logging a run result" workflow, and attachment storage under `measures/<experiment-name>/`.
 
 To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE START -->` and `<!-- EXPERIMENT-MODULE END -->` (inclusive) in `secretary.md`.
 
@@ -115,37 +114,17 @@ To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE S
 
 ## Updating
 
-Secretary stores your config directly inside the command file. When you pull a new version, carry your values over manually — it takes two minutes.
-
-1. **Note your current config values** — open your installed `secretary.md` and copy the four lines under `<!-- Auto-filled on first run -->`:
-   ```
-   work_state_dir: /your/path
-   team_lead: name-or-none
-   drive_journal_dir: null-or-path
-   drive_metrics_dir: null-or-path
-   ```
-
-2. **Pull and copy** the updated file:
+1. Pull the latest version:
    ```bash
    cd the_secretary && git pull
-   # Global install:
-   cp .claude/commands/secretary.md ~/.claude/commands/secretary.md
-   # Per-project install:
-   cp .claude/commands/secretary.md <your-project>/.claude/commands/secretary.md
    ```
+   Or download the repo as a ZIP and extract it.
 
-3. **Re-fill your config values** in the new file (the Config section at the top).
-
-4. **Re-strip any disabled modules** — if you answered `no` / `none` at setup, run the relevant command:
-   ```bash
-   # If you disabled experiment tracking
-   sed -i '/<!-- EXPERIMENT-MODULE START -->/,/<!-- EXPERIMENT-MODULE END -->/d' \
-     ~/.claude/commands/secretary.md
-
-   # If you disabled team-lead coordination
-   sed -i '/<!-- TEAM-LEAD-ONLY START -->/,/<!-- TEAM-LEAD-ONLY END -->/d' \
-     ~/.claude/commands/secretary.md
+2. Open Claude Code and type:
    ```
+   /secretary update
+   ```
+   Secretary will ask where the new file is, then handle everything automatically — preserving your config and re-stripping any modules you had disabled.
 
 ---
 
@@ -166,7 +145,7 @@ At **session open** — the first thing Secretary does (after reading `todo.md`)
 ### What is written to it and when?
 
 | Event | What is appended |
-|-------|-----------------|
+|-------|----------------|
 | Any activity report from the user | A `### [context]` block with What / Data / Observations / Decisions |
 | Routine request (no todo change) | A one-line activity entry |
 | Session open on a new day | Day summary block appended to *yesterday's* file |
@@ -185,22 +164,22 @@ If multiple days pass without a session (e.g. over a weekend), the summary is wr
 
 | Trigger | What Secretary does |
 |---------|---------------------|
-| New task from user | Asks which main task it belongs to (or creates a new main task); runs coordination check; offers to schedule a calendar block |
+| New task from user | Asks which main task it belongs to (or creates a new main task); runs coordination check |
 | Status update / close | Reads `todo.md`, applies the change, writes back |
 | Run result reported | Matches to an experiment in `measures.md`, appends entry with Reported/Context/Meaning |
 | Conclusion / insight | Appends to `results.md` |
 | "What did I do this week?" | Summarises by main task + subtask status; reads daily logs for detail |
 | "What's urgent?" | Shows tasks by time-to-deadline in three bands |
 | "What's stuck?" | Lists blocked subtasks, stale main tasks, overdue deadlines, open questions |
-| External input (Slack, PDF, email) | Summarises to daily log; alerts if new activity doesn't match any active task |
+| External input (Slack thread, screenshot) | Summarises to daily log; alerts if new activity doesn't match any active task |
+| `/secretary update` | Reads new file path, preserves config, re-strips disabled modules |
 
 ---
 
 ## Boundaries
 
-Secretary will never:
-- Write to Slack
-- Create calendar events without your explicit confirmation of slot and title
-- Delete or edit historical log entries
+Secretary will not do the following **without an explicit request**:
+- Write to Slack or take any other external action
+- Delete or edit historical log entries (this is always forbidden)
 - Fabricate data — "not recorded" is a valid answer
 - Decide on your behalf
