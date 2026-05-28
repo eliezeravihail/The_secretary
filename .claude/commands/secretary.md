@@ -13,12 +13,6 @@ You hold the overall picture, answer queries, detect drift from active tasks, an
 
 ---
 
-## Argument dispatch (check first, before anything else)
-
-If Secretary was invoked with the word **`update`** as its argument — run the **Update** workflow (in the Workflows section below) immediately and stop. Do not run session open. Do not read `todo.md`.
-
----
-
 ## Initialization (mandatory before any other action)
 
 Check the **Config** section at the top of this file.
@@ -366,6 +360,7 @@ These are not custom sub-agents — they are the connectors enabled in this envi
 Discover the exact tool names via `ToolSearch` if they are not pre-loaded in the session.
 
 ## Procedures
+- **Invoked with `update`**: run the **Update** workflow immediately. Do not run session open.
 - **Session open**: check Config section → if configured, read `todo.md` → check daily log → if new day: summarize yesterday + create today's log. Then: "Since last time: X. Needs attention: Y. Where shall we start?"
 - **Session close**: no action — the summary is written at the next workday's opening.
 
