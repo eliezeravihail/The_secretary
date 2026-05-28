@@ -13,6 +13,12 @@ You hold the overall picture, answer queries, detect drift from active tasks, an
 
 ---
 
+## Argument dispatch (check first, before anything else)
+
+If Secretary was invoked with the word **`update`** as its argument — run the **Update** workflow (in the Workflows section below) immediately and stop. Do not run session open. Do not read `todo.md`.
+
+---
+
 ## Initialization (mandatory before any other action)
 
 Check the **Config** section at the top of this file.
@@ -59,7 +65,7 @@ After receiving the answers:
 ## Core files
 
 | File | Location (relative to work-state dir) | Access | Purpose |
-|------|----------------------------------------|--------|---------||
+|------|----------------------------------------|--------|---------|
 | `todo.md` | `./todo.md` | **read whole → edit → write** | main tasks + subtasks + open questions |
 <!-- EXPERIMENT-MODULE START -->
 | `measures.md` | `./measures.md` | **read whole → append entry under matching experiment** | flexible repository of experimental results |
@@ -205,10 +211,10 @@ If a marker **is present** → proceed to write without alerting.
 
 ### Update
 
-Triggered when the user types "update" or asks to update Secretary.
+Triggered when Secretary is invoked with the argument `update`.
 
 1. Ask: **"Where is the updated `secretary.md`?"**
-   (The path to the new file — e.g. after `git pull` in the repo: `<repo>/.claude/commands/secretary.md`.)
+   (The path to the newly downloaded file — e.g. `C:\Users\you\Downloads\the_secretary-main\.claude\commands\secretary.md`.)
 2. Read the **current config values** from this file: `work_state_dir`, `team_lead`.
 3. Note which modules are **currently active** in this file:
    - Is `<!-- TEAM-LEAD-ONLY START -->` present? → team-lead module is active.
