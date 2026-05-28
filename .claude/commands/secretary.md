@@ -153,7 +153,10 @@ Append only. **Never edit old entries. Do not read before writing.**
 
 ## Workflows
 
+> **Before any write workflow** (todo update, run result, conclusion, routine log) — run **Ensure today's daily log** (see the Daily log section). If today's `daily/YYYY-MM/YYYY-MM-DD.md` does not exist, initialize it first. Every information update implicitly guarantees the daily log for today exists before writing.
+
 ### todo update
+0. **Ensure today's daily log** exists (initialize if missing — see Daily log § Ensure today's daily log).
 1. Read all of `todo.md`.
 2. Identify the type of change:
    - **New task reported by the user** → run the **task placement** flow (below).
@@ -235,9 +238,11 @@ If **No** or **Later** → do nothing further; the task remains without a calend
 > Never create a calendar event without explicit confirmation of slot and title.
 
 ### Logging a routine request (no todo change)
-- Append to `log.md` only, no read.
+0. **Ensure today's daily log** exists (initialize if missing).
+1. Append to `log.md` only, no read.
 
 ### Logging a run result
+0. **Ensure today's daily log** exists (initialize if missing).
 1. **Read `measures.md`** to extract the list of known experiments (the `## [experiment-name]` section headers).
 2. **Match the reported result** against the known list (case-insensitive, partial match allowed).
    - **Match found** → proceed to step 3.
@@ -261,19 +266,27 @@ If **No** or **Later** → do nothing further; the task remains without a calend
 5. Append to `log.md`: `[YYYY-MM-DD] result: <experiment> · <short summary>`.
 
 ### Logging a conclusion / insight
-- Append to `results.md`.
-- Append to `log.md`: `[YYYY-MM-DD] insight: <topic>`.
+0. **Ensure today's daily log** exists (initialize if missing).
+1. Append to `results.md`.
+2. Append to `log.md`: `[YYYY-MM-DD] insight: <topic>`.
 
 ## Daily log
 
-### Lifecycle
-1. **Session open** — check whether `daily/YYYY-MM/YYYY-MM-DD.md` exists (today's date).
+### Ensure today's daily log (reusable routine)
+
+Run this **at session open and before every write workflow** (todo update, run result, conclusion, routine log). It is idempotent — safe to call repeatedly.
+
+1. Check whether `daily/YYYY-MM/YYYY-MM-DD.md` exists (today's date).
+   - **Exists** → done, continue with the same file.
    - **Does not exist (new workday):**
-     a. Check whether a previous day's log exists without a `## Day summary` block. If so — append a summary at its end (without reading the file).
+     a. Check whether the most recent previous day's log exists without a `## Day summary` block. If so — append a summary at its end (without reading the file).
      b. Create the month directory `daily/YYYY-MM/` if missing, then create today's log with only the header.
-   - **Exists** → continue with the same file.
-2. **After every activity report** — append to the end of the file only. **Do not read before appending.**
-3. **No active session close** — the summary is written only when a new day opens.
+
+### Lifecycle
+1. **Session open** — run **Ensure today's daily log**.
+2. **Before every write workflow** — run **Ensure today's daily log** (so a day that rolls over mid-session is caught, not just at open).
+3. **After every activity report** — append to the end of the file only. **Do not read before appending.**
+4. **No active session close** — the summary is written only when a new day opens.
 
 ### Daily file template
 
@@ -361,7 +374,7 @@ These are not custom sub-agents — they are the connectors enabled in this envi
 Discover the exact tool names via `ToolSearch` if they are not pre-loaded in the session.
 
 ## Procedures
-- **Session open**: check Config section → if configured, read `todo.md` → check daily log → if new day: summarize yesterday + create today's log. Then: "Since last time: X. Needs attention: Y. Where shall we start?"
+- **Session open**: check Config section → if configured, read `todo.md` → run **Ensure today's daily log** (summarizes yesterday + creates today's log if it's a new day). Then: "Since last time: X. Needs attention: Y. Where shall we start?"
 - **Session close**: no action — the summary is written at the next workday's opening.
 
 ## Boundaries
