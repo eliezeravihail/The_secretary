@@ -15,7 +15,7 @@ It is **not** an AI memory system. It is a disciplined documentation tool: struc
 - Detects **drift** when new input doesn't belong to any active task
 - Integrates with **calendar** (scheduling subtasks), **Slack** (reading threads), **Drive** (fetching docs), and **Gmail** (drafting follow-ups)
 - Optionally tracks **experiment results** (`measures.md`) — stripped at setup if not needed
-- Optionally enforces **team-lead coordination** before executing new tasks — stripped at setup if not needed
+- Optionally enforces **team-lead coordination** before executing any new task — stripped at setup if not needed
 
 ---
 
@@ -113,6 +113,42 @@ To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE S
 
 ---
 
+## Updating
+
+Secretary stores your config directly inside the command file. When you pull a new version, carry your values over manually — it takes two minutes.
+
+1. **Note your current config values** — open your installed `secretary.md` and copy the four lines under `<!-- Auto-filled on first run -->`:
+   ```
+   work_state_dir: /your/path
+   team_lead: name-or-none
+   drive_journal_dir: null-or-path
+   drive_metrics_dir: null-or-path
+   ```
+
+2. **Pull and copy** the updated file:
+   ```bash
+   cd the_secretary && git pull
+   # Global install:
+   cp .claude/commands/secretary.md ~/.claude/commands/secretary.md
+   # Per-project install:
+   cp .claude/commands/secretary.md <your-project>/.claude/commands/secretary.md
+   ```
+
+3. **Re-fill your config values** in the new file (the Config section at the top).
+
+4. **Re-strip any disabled modules** — if you answered `no` / `none` at setup, run the relevant command:
+   ```bash
+   # If you disabled experiment tracking
+   sed -i '/<!-- EXPERIMENT-MODULE START -->/,/<!-- EXPERIMENT-MODULE END -->/d' \
+     ~/.claude/commands/secretary.md
+
+   # If you disabled team-lead coordination
+   sed -i '/<!-- TEAM-LEAD-ONLY START -->/,/<!-- TEAM-LEAD-ONLY END -->/d' \
+     ~/.claude/commands/secretary.md
+   ```
+
+---
+
 ## Daily log — lifecycle and timing
 
 Every workday gets a file at `daily/YYYY-MM/YYYY-MM-DD.md`. Secretary manages it automatically.
@@ -142,51 +178,6 @@ Secretary appends **only** — it never reads the daily log before writing to it
 To **yesterday's file**, at the start of the next workday's session open. There is no explicit "session close" step — the summary is triggered by the next session opening on a new date.
 
 If multiple days pass without a session (e.g. over a weekend), the summary is written for the most recent previous log that is missing one, the first time a new session opens.
-
----
-
-## Updating
-
-Secretary stores your config directly inside the command file. A file-level update therefore requires preserving those values.
-
-### Manual update
-
-1. Note your current config values (top of `secretary.md`, the four lines after `<!-- Auto-filled... -->`).
-2. Download the latest version:
-   ```bash
-   cd the_secretary && git pull
-   ```
-3. Copy the updated file to wherever you installed it (global or per-project).
-4. Re-insert your config values into the Config section at the top.
-5. If you had disabled a module (team lead or experiments), re-delete the corresponding marked sections.
-
-### Automated update (global install)
-
-```bash
-cd the_secretary
-git pull
-
-# Preserve your config before overwriting
-old_config=$(awk '/Auto-filled/,/^$/' ~/.claude/commands/secretary.md | head -6)
-
-# Copy new file
-cp .claude/commands/secretary.md ~/.claude/commands/secretary.md
-
-# Re-apply your config (edit the four lines manually or use sed)
-# work_state_dir, team_lead, drive_journal_dir, drive_metrics_dir
-```
-
-If you disabled a module at setup, run this after copying to strip it again:
-
-```bash
-# Remove experiment module (if you answered "no" at setup)
-sed -i '/<!-- EXPERIMENT-MODULE START -->/,/<!-- EXPERIMENT-MODULE END -->/d' \
-  ~/.claude/commands/secretary.md
-
-# Remove team-lead module (if you answered "none" at setup)
-sed -i '/<!-- TEAM-LEAD-ONLY START -->/,/<!-- TEAM-LEAD-ONLY END -->/d' \
-  ~/.claude/commands/secretary.md
-```
 
 ---
 
