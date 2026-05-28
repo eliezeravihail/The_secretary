@@ -2,8 +2,6 @@
 
 A Claude Code slash command (`/secretary`) that acts as your personal work journal — tracking tasks, logging daily activity, and keeping you oriented across sessions.
 
-It is **not** an AI memory system. It is a disciplined documentation tool: structured files, clear workflows, no magic.
-
 ---
 
 ## What it does
@@ -50,7 +48,7 @@ The command is available only when Claude Code runs inside `<your-project>`.
 
 ## First run
 
-Type `/secretary` in Claude Code. On the first run it will ask four questions one at a time:
+Type `/secretary` in Claude Code. On the first run it will ask three questions one at a time:
 
 | # | Question | Notes |
 |---|----------|-------|
@@ -168,8 +166,7 @@ If multiple days pass without a session (e.g. over a weekend), the summary is wr
 
 ## Boundaries
 
-Secretary will not do the following **without an explicit request**:
-- Write to Slack or take any other external action
+Secretary will not do the following:
+- Write to Slack or take any other external action without an explicit request
 - Delete or edit historical log entries (this is always forbidden)
 - Fabricate data — "not recorded" is a valid answer
-- Decide on your behalf
