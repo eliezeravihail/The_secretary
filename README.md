@@ -46,21 +46,11 @@ cp the_secretary/.claude/commands/secretary.md <your-project>/.claude/commands/s
 
 The command is available only when Claude Code runs inside `<your-project>`.
 
-### Option C — Use this repo as your work directory
-
-Clone the repo and open it directly in Claude Code. The `.claude/commands/secretary.md` file is loaded automatically from the project.
-
-```bash
-git clone https://github.com/eliezeravihail/the_secretary.git
-cd the_secretary
-claude  # or open in Claude Code desktop / web
-```
-
 ---
 
 ## First run
 
-Type `/secretary` in Claude Code. On the first run it will ask three questions one at a time:
+Type `/secretary` in Claude Code. On the first run it will ask four questions one at a time:
 
 | # | Question | Notes |
 |---|----------|-------|
@@ -130,7 +120,7 @@ To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE S
 
 ## Daily log — lifecycle and timing
 
-Every workday gets a file at `daily/YYYY-MM/YYYY-MM-DD.md`. Secretary manages it automatically.
+Every workday gets a file at `daily/YYYY-MM/YYYY-MM-DD.md`. Secretary manages it automatically:
 
 ### When is it created?
 
@@ -145,7 +135,7 @@ At **session open** — the first thing Secretary does (after reading `todo.md`)
 ### What is written to it and when?
 
 | Event | What is appended |
-|-------|----------------|
+|-------|------------------|
 | Any activity report from the user | A `### [context]` block with What / Data / Observations / Decisions |
 | Routine request (no todo change) | A one-line activity entry |
 | Session open on a new day | Day summary block appended to *yesterday's* file |
