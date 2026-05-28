@@ -1,8 +1,0 @@
-# Memory engine dependencies
-# pip install -r .secretary/requirements.txt
-#
-# Choose ONE embedder (or none for TF-IDF fallback):
-#   voyageai>=0.2.3      (recommended, VOYAGE_API_KEY)
-#   openai>=1.30.0       (alternative,  OPENAI_API_KEY)
-#
-# No other runtime deps — sqlite3, struct, hashlib are stdlib.
