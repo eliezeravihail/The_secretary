@@ -15,7 +15,7 @@ It is **not** an AI memory system. It is a disciplined documentation tool: struc
 - Detects **drift** when new input doesn't belong to any active task
 - Integrates with **calendar** (scheduling subtasks), **Slack** (reading threads), **Drive** (fetching docs), and **Gmail** (drafting follow-ups)
 - Optionally tracks **experiment results** (`measures.md`) — stripped at setup if not needed
-- Optionally enforces **team-lead coordination** before executing new main tasks — stripped at setup if not needed
+- Optionally enforces **team-lead coordination** before executing new tasks — stripped at setup if not needed
 
 ---
 
@@ -85,7 +85,7 @@ Two sections of the command file are gated behind init-time questions. If you an
 
 ### Team-lead coordination
 
-When enabled, every new **main task** triggers a coordination check — Secretary asks whether the task was aligned with the team lead before allowing execution. Subtasks are exempt.
+When enabled, every new **task** (main task or subtask) triggers a coordination check — Secretary asks whether the task was aligned with the team lead before allowing execution.
 
 To remove it after the fact, delete every line between `<!-- TEAM-LEAD-ONLY START -->` and `<!-- TEAM-LEAD-ONLY END -->` (inclusive) in `secretary.md`.
 
@@ -162,7 +162,7 @@ sed -i '/<!-- TEAM-LEAD-ONLY START -->/,/<!-- TEAM-LEAD-ONLY END -->/d' \
 
 | Trigger | What Secretary does |
 |---------|---------------------|
-| New task from user | Asks which main task it belongs to (or creates a new main task); offers to schedule a calendar block |
+| New task from user | Asks which main task it belongs to (or creates a new main task); runs coordination check; offers to schedule a calendar block |
 | Status update / close | Reads `todo.md`, applies the change, writes back |
 | Run result reported | Matches to an experiment in `measures.md`, appends entry with Reported/Context/Meaning |
 | Conclusion / insight | Appends to `results.md` |

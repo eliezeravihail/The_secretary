@@ -183,29 +183,29 @@ To which main task does this belong?
 3. Open question (move to the Open questions section)
 ```
 
-- **Option 1 (existing main task)** → add the task as a subtask under that main task. No coordination check (subtasks inherit). Continue to step 3 of `todo update`.
-- **Option 2 (new main task)** → ask for: name, priority (default `[P2]`), optional deadline, optional source.<!-- TEAM-LEAD-ONLY START --> Then run the **coordination check** (below) — it applies only to **new main tasks**.<!-- TEAM-LEAD-ONLY END --> Add the main task header with no subtasks yet. Continue to step 3.
+- **Option 1 (existing main task)** → add the task as a subtask under that main task.<!-- TEAM-LEAD-ONLY START --> Run the **coordination check** (below).<!-- TEAM-LEAD-ONLY END --> Continue to step 3 of `todo update`.
+- **Option 2 (new main task)** → ask for: name, priority (default `[P2]`), optional deadline, optional source.<!-- TEAM-LEAD-ONLY START --> Then run the **coordination check** (below).<!-- TEAM-LEAD-ONLY END --> Add the main task header with no subtasks yet. Continue to step 3.
 - **Option 3 (open question)** → add to the Open questions section. Continue to step 3.
 
 Main tasks are not closed automatically — even when all subtasks are `[x]`, leave the main task open. Closure is an explicit user action.
 
 <!-- TEAM-LEAD-ONLY START -->
-#### Coordination check (before adding a new main task)
+#### Coordination check (before adding any task)
 
-Applies **only to a new main task** — subtasks inherit the coordination status of their parent.
+Applies to **every new task** — both new main tasks and new subtasks.
 
-Check whether the main-task description contains a coordination marker referencing the team lead. The marker can take any of these forms:
+Check whether the task description contains a coordination marker referencing the team lead. The marker can take any of these forms:
 - `from <team-lead-name>` / `from-<team-lead-name>`
 - `from Slack with <team-lead-name>`
-- The team lead's name as an explicit source/owner in the main-task header
+- The team lead's name as an explicit source/owner in the task description
 
 (Substitute `<team-lead-name>` with the `team_lead` value from config.)
 
 If **no marker is present** — alert **before writing**:
 
 ```
-⚠️ The main task is not marked as coordinated with <team-lead-name>:
-"[main-task description]"
+⚠️ This task is not marked as coordinated with <team-lead-name>:
+"[task description]"
 
 Was it coordinated with <team-lead-name>?
 1. Yes — when/where? (I'll add a `from <team-lead-name>` marker)
@@ -213,10 +213,10 @@ Was it coordinated with <team-lead-name>?
 3. Not yet — mark as "awaiting coordination"?
 ```
 
-> **If the user explicitly responds "continue"** — add the main task but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed` to the header.
+> **If the user explicitly responds "continue"** — add the task but append the marker `⚠️ manually overridden — team-lead coordination requirement bypassed`.
 
-> **Rule:** An uncoordinated main task may be added to `todo.md` as planning only.
-> **Execution is forbidden** (opening a branch, writing code, running an experiment, adding subtasks for execution) before coordination with the team lead.
+> **Rule:** An uncoordinated task may be added to `todo.md` as planning only.
+> **Execution is forbidden** (opening a branch, writing code, running an experiment) before coordination with the team lead.
 
 If a marker **is present** → proceed to write without alerting.
 <!-- TEAM-LEAD-ONLY END -->
