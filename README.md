@@ -1,0 +1,183 @@
+# The Secretary
+
+A Claude Code slash command (`/secretary`) that acts as your personal work journal — tracking tasks, logging daily activity, and keeping you oriented across sessions.
+
+It is **not** an AI memory system. It is a disciplined documentation tool: structured files, clear workflows, no magic.
+
+---
+
+## What it does
+
+- Maintains a **two-level task list** (`todo.md`): main tasks → subtasks, with priorities and optional deadlines
+- Keeps a **daily log** (`daily/YYYY-MM/YYYY-MM-DD.md`) with full activity detail
+- Logs **conclusions and insights** (`results.md`)
+- Answers queries: "what did I do this week?", "what's urgent?", "what's stuck?"
+- Detects **drift** when new input doesn't belong to any active task
+- Integrates with **calendar** (scheduling subtasks), **Slack** (reading threads), **Drive** (fetching docs), and **Gmail** (drafting follow-ups)
+- Optionally tracks **experiment results** (`measures.md`) — stripped at setup if not needed
+- Optionally enforces **team-lead coordination** before executing new main tasks — stripped at setup if not needed
+
+---
+
+## Requirements
+
+- [Claude Code](https://claude.ai/code) (CLI, desktop app, or web)
+- No Python dependencies, no server, no API keys required for core functionality
+
+---
+
+## Installation
+
+### Option A — Global (available in every project)
+
+```bash
+git clone https://github.com/eliezeravihail/the_secretary.git
+cp the_secretary/.claude/commands/secretary.md ~/.claude/commands/secretary.md
+```
+
+The command becomes available as `/secretary` in any Claude Code session.
+
+### Option B — Per-project
+
+```bash
+git clone https://github.com/eliezeravihail/the_secretary.git
+cp the_secretary/.claude/commands/secretary.md <your-project>/.claude/commands/secretary.md
+```
+
+The command is available only when Claude Code runs inside `<your-project>`.
+
+### Option C — Use this repo as your work directory
+
+Clone the repo and open it directly in Claude Code. The `.claude/commands/secretary.md` file is loaded automatically from the project.
+
+```bash
+git clone https://github.com/eliezeravihail/the_secretary.git
+cd the_secretary
+claude  # or open in Claude Code desktop / web
+```
+
+---
+
+## First run
+
+Type `/secretary` in Claude Code. On the first run it will ask four questions one at a time:
+
+| # | Question | Notes |
+|---|----------|-------|
+| 1 | Which directory should hold the work state? | Full path; will be created if it doesn't exist |
+| 2 | Who is the team lead / coordinator? | Type `none` to disable the coordination workflow entirely |
+| 3 | Do you track experiments / metrics? | Type `no` to remove the experiment module entirely |
+| 4 | Path to the Drive journal directory? (optional) | Type `none` to skip |
+
+After answering, Secretary will:
+- Create the work-state directory and `daily/YYYY-MM/` for the current month
+- Create empty `todo.md` and `results.md` (and `measures.md` if experiments = yes)
+- Edit its own command file to save your config and strip any disabled modules
+- Present the opening questions to seed your initial task list
+
+From that point on, `/secretary` goes straight to work — no re-initialization.
+
+---
+
+## Optional modules
+
+Two sections of the command file are gated behind init-time questions. If you answer `none` / `no`, the corresponding lines are permanently deleted from the file. You can also remove them manually at any time.
+
+### Team-lead coordination
+
+When enabled, every new **main task** triggers a coordination check — Secretary asks whether the task was aligned with the team lead before allowing execution. Subtasks are exempt.
+
+To remove it after the fact, delete every line between `<!-- TEAM-LEAD-ONLY START -->` and `<!-- TEAM-LEAD-ONLY END -->` (inclusive) in `secretary.md`.
+
+### Experiment tracking
+
+When enabled, adds `measures.md` (grouped experiment results with Reported / Context / Meaning fields), the "Logging a run result" workflow, attachment storage under `measures/<experiment-name>/`, and Drive metrics integration.
+
+To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE START -->` and `<!-- EXPERIMENT-MODULE END -->` (inclusive) in `secretary.md`.
+
+---
+
+## File structure created by Secretary
+
+```
+<work-state-dir>/
+├── todo.md                        # main tasks + subtasks + open questions
+├── results.md                     # conclusions and insights (append-only)
+├── measures.md                    # experiment results (if module enabled)
+├── measures/
+│   └── <experiment-name>/         # attached artifacts (images, charts)
+└── daily/
+    └── YYYY-MM/
+        └── YYYY-MM-DD.md          # full daily log
+```
+
+---
+
+## Updating
+
+Secretary stores your config directly inside the command file. A file-level update therefore requires preserving those values.
+
+### Manual update
+
+1. Note your current config values (top of `secretary.md`, the four lines after `<!-- Auto-filled... -->`).
+2. Download the latest version:
+   ```bash
+   cd the_secretary && git pull
+   ```
+3. Copy the updated file to wherever you installed it (global or per-project).
+4. Re-insert your config values into the Config section at the top.
+5. If you had disabled a module (team lead or experiments), re-delete the corresponding marked sections.
+
+### Automated update (global install)
+
+```bash
+cd the_secretary
+git pull
+
+# Preserve your config before overwriting
+old_config=$(awk '/Auto-filled/,/^$/' ~/.claude/commands/secretary.md | head -6)
+
+# Copy new file
+cp .claude/commands/secretary.md ~/.claude/commands/secretary.md
+
+# Re-apply your config (edit the four lines manually or use sed)
+# work_state_dir, team_lead, drive_journal_dir, drive_metrics_dir
+```
+
+If you disabled a module at setup, run this after copying to strip it again:
+
+```bash
+# Remove experiment module (if you answered "no" at setup)
+sed -i '/<!-- EXPERIMENT-MODULE START -->/,/<!-- EXPERIMENT-MODULE END -->/d' \
+  ~/.claude/commands/secretary.md
+
+# Remove team-lead module (if you answered "none" at setup)
+sed -i '/<!-- TEAM-LEAD-ONLY START -->/,/<!-- TEAM-LEAD-ONLY END -->/d' \
+  ~/.claude/commands/secretary.md
+```
+
+---
+
+## Key workflows at a glance
+
+| Trigger | What Secretary does |
+|---------|---------------------|
+| New task from user | Asks which main task it belongs to (or creates a new main task); offers to schedule a calendar block |
+| Status update / close | Reads `todo.md`, applies the change, writes back |
+| Run result reported | Matches to an experiment in `measures.md`, appends entry with Reported/Context/Meaning |
+| Conclusion / insight | Appends to `results.md` |
+| "What did I do this week?" | Summarises by main task + subtask status; reads daily logs for detail |
+| "What's urgent?" | Shows tasks by time-to-deadline in three bands |
+| "What's stuck?" | Lists blocked subtasks, stale main tasks, overdue deadlines, open questions |
+| External input (Slack, PDF, email) | Summarises to daily log; alerts if new activity doesn't match any active task |
+
+---
+
+## Boundaries
+
+Secretary will never:
+- Write to Slack
+- Create calendar events without your explicit confirmation of slot and title
+- Delete or edit historical log entries
+- Fabricate data — "not recorded" is a valid answer
+- Decide on your behalf
