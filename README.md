@@ -102,13 +102,9 @@ To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE S
 
 ## Updating
 
-1. Pull the latest version:
-   ```bash
-   cd the_secretary && git pull
-   ```
-   Or download the repo as a ZIP and extract it.
-
-2. Open Claude Code and type:
+1. Download the repo as a ZIP from GitHub and extract it.
+2. Open a terminal, `cd` into the extracted folder.
+3. Open Claude Code and type:
    ```
    /secretary update
    ```
