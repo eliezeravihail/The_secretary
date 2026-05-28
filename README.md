@@ -113,6 +113,38 @@ To remove it after the fact, delete every line between `<!-- EXPERIMENT-MODULE S
 
 ---
 
+## Daily log — lifecycle and timing
+
+Every workday gets a file at `daily/YYYY-MM/YYYY-MM-DD.md`. Secretary manages it automatically.
+
+### When is it created?
+
+At **session open** — the first thing Secretary does (after reading `todo.md`) is check whether today's log file exists.
+
+- **New day (file missing):**
+  1. Checks the most recent previous log. If it has no `## Day summary` section, writes one now (appended without re-reading the file).
+  2. Creates the month directory `daily/YYYY-MM/` if it doesn't exist yet.
+  3. Creates today's file with just the date header — ready to receive entries.
+- **Same day (file exists):** continues appending to it as usual.
+
+### What is written to it and when?
+
+| Event | What is appended |
+|-------|-----------------|
+| Any activity report from the user | A `### [context]` block with What / Data / Observations / Decisions |
+| Routine request (no todo change) | A one-line activity entry |
+| Session open on a new day | Day summary block appended to *yesterday's* file |
+
+Secretary appends **only** — it never reads the daily log before writing to it.
+
+### Where is the day summary written?
+
+To **yesterday's file**, at the start of the next workday's session open. There is no explicit "session close" step — the summary is triggered by the next session opening on a new date.
+
+If multiple days pass without a session (e.g. over a weekend), the summary is written for the most recent previous log that is missing one, the first time a new session opens.
+
+---
+
 ## Updating
 
 Secretary stores your config directly inside the command file. A file-level update therefore requires preserving those values.
